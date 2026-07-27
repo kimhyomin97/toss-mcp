@@ -1,0 +1,20 @@
+{
+  "name": "toss-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "토스증권 Open API MCP 서버 (개인용, 조회 전용)",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5.9.3"
+  }
+}
