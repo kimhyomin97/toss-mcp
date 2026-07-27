@@ -107,7 +107,17 @@ toss-mcp/
 | 4 | 패턴 변형 tool 수작업: `get_accounts`(무입력), `get_holdings`(헤더형), `get_stock_warnings`(path형) — 수작업은 여기까지 | 🟡 프로토콜 검증 완료, 실데이터 E2E는 0a 승인 후 |
 | 5 | openapi.json 자동 등록으로 전환: **"GET만 등록" 필터로 23개 전부 매핑** (registrar + schema + generic handler) | 🟡 프로토콜 검증 완료 (23개 등록, enum·optional·min/max 변환 확인). 실데이터 E2E는 0a 승인 후 |
 | 6 | Claude Code 등록 + 자연어 실사용 테스트 | 🟡 user 스코프 등록·연결 확인(`claude mcp list` √). 헤드리스 테스트로 tool 선택 검증 통과: "삼성전자 얼마야"→`get_prices(symbols=005930)`, "잔고 보여줘"→`get_accounts` 연쇄 시작. 실데이터 대화만 0a 승인 후 (자격증명 나오면 `-e` 포함 재등록 필요) |
-| 7 | (추후) 주문·조건주문 6개를 opt-in 플래그 뒤에서 확장 | ❌ |
+| 8 | 수익률 추이: `scripts/collect.ts` 일일 스냅샷 수집기(holdings.dailyProfitLoss→CSV) + 작업 스케줄러 등록. 과거는 orders+candles+exchange-rate로 근사 재구성 (get_orders from/to는 전체 기간 지원 — 실제 범위는 실데이터로 확인) | ❌ 키 발급 후 |
+| 9 | (추후) 주문·조건주문 6개를 opt-in 플래그 뒤에서 확장 | ❌ |
+
+### 키 발급 시 체크리스트 (승인 알림 오면 이 순서대로)
+
+1. WTS > 설정 > Open API: client_id/secret 발급 + **허용 IP 등록** (유동 IP면 변경 시 재등록)
+2. 터미널에서 `$env:TOSS_CLIENT_ID` / `$env:TOSS_CLIENT_SECRET` 설정 (채팅에 secret 금지)
+3. `npx tsx scripts/smoke.ts` → 현재가 수신 확인 (2·3·5단계 실데이터 E2E 일괄 완료)
+4. `claude mcp remove toss-invest` 후 `-e` 자격증명 포함 재등록 (7절 커맨드)
+5. 자연어 시나리오 테스트: 시세 / 잔고(연쇄) / 환율 / 랭킹 → 실패 패턴 있으면 3절 하이브리드 표 적용
+6. **수집기(8단계)를 바로 제작·가동** — 스냅샷 데이터는 시작일부터만 쌓이므로 최우선
 
 **단계 순서를 지킨다.** 특히 3단계(수작업 tool 1개 E2E)가 이 프로젝트의 학습 핵심이므로
 건너뛰지 않는다. 1단계는 0단계와 무관하게 진행 가능. 각 단계 완료 시 이 표를 갱신한다.
