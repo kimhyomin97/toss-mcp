@@ -99,14 +99,14 @@ toss-mcp/
 
 | 단계 | 내용 | 상태 |
 |---|---|---|
-| 0a | 토스증권 WTS 설정 > Open API에서 **사전신청 제출** → 순차 승인 대기 (승인 후 client_id/secret 발급 가능) | ❌ 신청 필요 |
+| 0a | 토스증권 WTS 설정 > Open API에서 사전신청 → 승인 → client_id/secret 발급 + 허용 IP 등록 | ✅ 2026-07-28 발급, `.env` 등록 |
 | 0b | API 명세 확보 — 공식 openapi.json이 인증 없이 공개됨: `https://openapi.tossinvest.com/openapi-docs/latest/openapi.json` | ✅ 다운로드 완료 (v1.2.5, 프로젝트 루트 `openapi.json`) |
 | 1 | 스캐폴딩: package.json, SDK·zod·tsx 설치, tsconfig, 최소 index.ts (initialize 응답 확인) | ✅ |
-| 2 | TokenManager + `scripts/smoke.ts`로 토큰 발급→API 1개 수동 호출 검증 | 🟡 코드 작성·타입체크 완료. 실행 검증은 0a 승인 + 허용 IP 등록 후 |
-| 3 | 첫 tool `get_quote` 수작업 등록 → tools/list·tools/call 프로토콜 검증 완료 (TossClient 포함) | 🟡 실제 시세 수신 E2E만 0a 승인 후 |
-| 4 | 패턴 변형 tool 수작업: `get_accounts`(무입력), `get_holdings`(헤더형), `get_stock_warnings`(path형) — 수작업은 여기까지 | 🟡 프로토콜 검증 완료, 실데이터 E2E는 0a 승인 후 |
-| 5 | openapi.json 자동 등록으로 전환: **"GET만 등록" 필터로 23개 전부 매핑** (registrar + schema + generic handler) | 🟡 프로토콜 검증 완료 (23개 등록, enum·optional·min/max 변환 확인). 실데이터 E2E는 0a 승인 후 |
-| 6 | Claude Code 등록 + 자연어 실사용 테스트 | 🟡 user 스코프 등록·연결 확인(`claude mcp list` √). 헤드리스 테스트로 tool 선택 검증 통과: "삼성전자 얼마야"→`get_prices(symbols=005930)`, "잔고 보여줘"→`get_accounts` 연쇄 시작. 실데이터 대화만 0a 승인 후 (자격증명 나오면 `-e` 포함 재등록 필요) |
+| 2 | TokenManager + `scripts/smoke.ts`로 토큰 발급→API 1개 수동 호출 검증 | ✅ 2026-07-28 통과 (삼성전자·AAPL 실시세 수신) |
+| 3 | 첫 tool `get_quote` 수작업 등록 → tools/list·tools/call 프로토콜 검증 (TossClient 포함) | ✅ (수작업 tool은 5단계에서 자동 등록으로 대체, src/tools/에 기록 보존) |
+| 4 | 패턴 변형 tool 수작업: `get_accounts`(무입력), `get_holdings`(헤더형), `get_stock_warnings`(path형) | ✅ (동일 — 자동 등록으로 대체) |
+| 5 | openapi.json 자동 등록으로 전환: **"GET만 등록" 필터로 23개 전부 매핑** (registrar + schema + generic handler) | ✅ 실데이터 검증 완료 (get_prices 실호출 성공) |
+| 6 | Claude Code 등록 + 자연어 실사용 테스트 | ✅ 헤드리스 E2E 통과: "삼성전자 지금 얼마야" → get_prices → **218,000원 실데이터 답변** (2026-07-28). 잔고·환율 등 추가 시나리오는 실사용하며 관찰 |
 | 8 | 수익률 추이: `scripts/collect.ts` 일일 스냅샷 수집기(holdings.dailyProfitLoss→CSV) + 작업 스케줄러 등록. 과거는 orders+candles+exchange-rate로 근사 재구성 (get_orders from/to는 전체 기간 지원 — 실제 범위는 실데이터로 확인) | ❌ 키 발급 후 |
 | 9 | (추후) 주문·조건주문 6개를 opt-in 플래그 뒤에서 확장 | ❌ |
 
