@@ -24,7 +24,7 @@
 | tool 등록 방식 | **수작업 2~3개로 패턴 학습 → openapi.json 자동 등록으로 전환** | 학습 순서: tool을 손으로 만들어야 이름·설명·스키마·핸들러의 역할이 보인다. 단, 명세 실측 결과 GET이 24개뿐이라 전수 수작업은 노동 — 패턴 체득 후 자동화 |
 | 기능 범위 | **읽기 전용(GET) 23개 전부 매핑.** 주문·조건주문 6개(POST/DELETE)는 제외, 추후 `TOSS_ENABLE_TRADING=true` 같은 opt-in 플래그 뒤에서만 확장 | 23개는 LLM 컨텍스트에 부담 없는 규모. 주문은 tool 미등록 = LLM이 실수로도 주문 불가 — 코드 레벨 안전장치 |
 | 인증 | tool이 아닌 인프라. TokenManager 내부 모듈로 처리 | 토큰 발급/갱신을 LLM에 노출할 이유 없음 |
-| 자격증명 | 환경 변수 `TOSS_CLIENT_ID` / `TOSS_CLIENT_SECRET` | 코드·설정 파일 하드코딩 금지 |
+| 자격증명 | 프로젝트 루트 `.env` 파일 (`src/env.ts` 로더, `.gitignore` 등록) 또는 환경 변수 `TOSS_CLIENT_ID` / `TOSS_CLIENT_SECRET` — 환경 변수가 우선 | 코드·커밋 대상 파일 하드코딩 금지. `.env.example`이 템플릿 |
 | 실행 | `npx tsx src/index.ts` (개발) | 빌드는 필요해지면 |
 
 ### 1:1 매핑의 두 축 (재설계에서 분리한 개념)
@@ -113,9 +113,9 @@ toss-mcp/
 ### 키 발급 시 체크리스트 (승인 알림 오면 이 순서대로)
 
 1. WTS > 설정 > Open API: client_id/secret 발급 + **허용 IP 등록** (유동 IP면 변경 시 재등록)
-2. 터미널에서 `$env:TOSS_CLIENT_ID` / `$env:TOSS_CLIENT_SECRET` 설정 (채팅에 secret 금지)
+2. `.env.example`을 `.env`로 복사해 실제 값 기입 (사용자가 직접. 채팅에 secret 금지)
 3. `npx tsx scripts/smoke.ts` → 현재가 수신 확인 (2·3·5단계 실데이터 E2E 일괄 완료)
-4. `claude mcp remove toss-invest` 후 `-e` 자격증명 포함 재등록 (7절 커맨드)
+4. 재등록 불필요 — 서버가 `.env`를 직접 읽으므로 기존 등록 그대로, 새 세션이면 자동 반영
 5. 자연어 시나리오 테스트: 시세 / 잔고(연쇄) / 환율 / 랭킹 → 실패 패턴 있으면 3절 하이브리드 표 적용
 6. **수집기(8단계)를 바로 제작·가동** — 스냅샷 데이터는 시작일부터만 쌓이므로 최우선
 

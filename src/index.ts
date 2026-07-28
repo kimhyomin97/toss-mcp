@@ -10,8 +10,12 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { loadDotEnv } from "./env.js";
 import { TossClient } from "./toss/client.js";
 import { registerSpecTools } from "./registrar.js";
+
+// 자격증명(.env)을 가장 먼저 로드 — TokenManager가 process.env를 읽기 전에
+loadDotEnv();
 
 // 서버의 이름·버전은 initialize 핸드셰이크 때 클라이언트에게 전달된다.
 const server = new McpServer({

@@ -71,26 +71,20 @@ npm install
 # 자격증명 없이도 서버 기동과 tool 목록까지는 확인 가능
 npx @modelcontextprotocol/inspector npx tsx src/index.ts
 
-# 자격증명이 있다면 API 실호출 검증
-$env:TOSS_CLIENT_ID = "발급받은_ID"
-$env:TOSS_CLIENT_SECRET = "발급받은_SECRET"
+# 자격증명이 있다면: .env.example을 .env로 복사해 실제 값 기입 후 (커밋 안 됨)
 npx tsx scripts/smoke.ts
 ```
 
 **2) Claude Code 등록**
 
+자격증명은 서버가 프로젝트 루트의 `.env`에서 직접 읽으므로 등록 커맨드에 넣지 않습니다.
+
 ```bash
 # Windows
-claude mcp add toss-invest --scope user \
-  -e TOSS_CLIENT_ID=발급받은_ID \
-  -e TOSS_CLIENT_SECRET=발급받은_SECRET \
-  -- cmd /c npx tsx C:\절대경로\toss-mcp\src\index.ts
+claude mcp add toss-invest --scope user -- cmd /c npx tsx C:\절대경로\toss-mcp\src\index.ts
 
 # macOS/Linux
-claude mcp add toss-invest --scope user \
-  -e TOSS_CLIENT_ID=발급받은_ID \
-  -e TOSS_CLIENT_SECRET=발급받은_SECRET \
-  -- npx tsx /절대경로/toss-mcp/src/index.ts
+claude mcp add toss-invest --scope user -- npx tsx /절대경로/toss-mcp/src/index.ts
 ```
 
 등록 후 `claude mcp list`에서 `√ Connected`를 확인하고, 새 세션에서 자연어로 질문하면 됩니다.

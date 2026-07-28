@@ -2,14 +2,16 @@
 // 인증·네트워크 문제를 서버 코드와 분리해서 검증하기 위한 최소 실험이다.
 //
 // 실행 (자격증명 발급 + WTS에서 허용 IP 등록 후):
-//   PowerShell> $env:TOSS_CLIENT_ID = "발급받은_ID"
-//   PowerShell> $env:TOSS_CLIENT_SECRET = "발급받은_SECRET"
-//   PowerShell> npx tsx scripts/smoke.ts
+//   1. .env.example을 .env로 복사해 실제 값 기입 (.env는 커밋되지 않음)
+//   2. npx tsx scripts/smoke.ts
 //
 // 참고: 여기서는 console.log(stdout)를 써도 된다. "stdout 금지" 규칙은
 // stdout이 JSON-RPC 채널인 MCP 서버 프로세스에만 적용된다. 이건 일반 스크립트다.
 
+import { loadDotEnv } from "../src/env.js";
 import { TokenManager } from "../src/toss/auth.js";
+
+loadDotEnv();
 
 const BASE_URL = "https://openapi.tossinvest.com";
 
